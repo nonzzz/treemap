@@ -119,7 +119,7 @@ export const presetZoomablePlugin = definePlugin({
 
             component.draw(true, false)
             stackMatrixTransformWithGraphAndLayer(component.elements, matrix.e, matrix.f, 1)
-            component.update()
+            component.update(true)
           }, {
             duration: ANIMATION_DURATION,
             onStop: () => {

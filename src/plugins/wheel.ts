@@ -207,7 +207,7 @@ function updateViewport(
       matrix.f,
       1
     )
-    component.update()
+    component.update(true)
 
     if (state.canTransition('IDLE')) {
       state.transition('IDLE')

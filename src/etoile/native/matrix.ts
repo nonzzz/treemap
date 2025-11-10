@@ -51,6 +51,13 @@ export class Matrix2D implements MatrixLoc {
     return this
   }
 
+  transformPoint(x: number, y: number) {
+    return {
+      x: this.a * x + this.c * y + this.e,
+      y: this.b * x + this.d * y + this.f
+    }
+  }
+
   translation(x: number, y: number) {
     this.e += x
     this.f += y

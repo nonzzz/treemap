@@ -60,7 +60,7 @@ export const presetDragElementPlugin = definePlugin({
             component.cleanup()
             component.draw(false, false)
             stackMatrixTransformWithGraphAndLayer(component.elements, matrix.e, matrix.f, 1)
-            component.update()
+            component.update(true)
             return true
           }, {
             duration: ANIMATION_DURATION,

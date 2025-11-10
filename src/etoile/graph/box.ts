@@ -3,8 +3,8 @@ import { asserts } from './types'
 
 export abstract class C extends Display {
   elements: Display[]
-  constructor() {
-    super()
+  constructor(shallowCount = 0) {
+    super(shallowCount)
     this.elements = []
   }
   abstract get __instanceOf__(): DisplayType
@@ -43,8 +43,8 @@ export abstract class C extends Display {
 export class Box extends C {
   elements: Display[]
 
-  constructor() {
-    super()
+  constructor(shallowCount = 0) {
+    super(shallowCount)
     this.elements = []
   }
 
