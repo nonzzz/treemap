@@ -22,17 +22,24 @@ export function perferNumeric(s: string | number) {
 
 export function noop() {}
 
-export function createRoundBlock(x: number, y: number, width: number, height: number, style?: Partial<RoundRectStyleOptions>) {
-  return new RoundRect({ width, height, x, y, style: { ...style } })
+export function createRoundBlock<T extends Any = Any>(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  style?: Partial<RoundRectStyleOptions>,
+  widget?: T
+) {
+  return new RoundRect({ width, height, x, y, style: { ...style } }, widget)
 }
 
-export function createTitleText(text: string, x: number, y: number, font: string, color: string) {
+export function createTitleText<T extends Any = Any>(text: string, x: number, y: number, font: string, color: string, widget?: T) {
   return new Text({
     text,
     x,
     y,
     style: { fill: color, textAlign: 'center', baseline: 'middle', font, lineWidth: 1 }
-  })
+  }, widget)
 }
 
 export const raf = window.requestAnimationFrame

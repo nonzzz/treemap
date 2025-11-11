@@ -157,7 +157,7 @@ export class Component extends Schedule {
       fill,
       padding: 0,
       radius: effectiveRadius
-    })
+    }, { x, y, w, h })
 
     this.rectLayer.add(rect)
     for (const child of node.children) {
@@ -203,7 +203,7 @@ export class Component extends Schedule {
     const textY = y + (node.children && node.children.length > 0
       ? Math.round(titleAreaHeight / 2)
       : Math.round(h / 2))
-    const textComponent = createTitleText(text, textX, textY, font, config.color)
+    const textComponent = createTitleText(text, textX, textY, font, config.color, { textX, textY })
     this.textLayer.add(textComponent)
     for (const child of node.children) {
       this.drawText(child)
@@ -293,8 +293,8 @@ interface TextLayoutResult {
 }
 
 export function getTextLayout(c: CanvasRenderingContext2D, text: string, width: number, height: number): TextLayoutResult {
-  const textWidth = c.measureText(text).width
   const metrics = c.measureText(text)
+  const textWidth = metrics.width
   const textHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
 
   if (textHeight > height) {

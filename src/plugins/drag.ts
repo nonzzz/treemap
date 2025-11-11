@@ -1,5 +1,6 @@
+import { isBox, isRoundRect, isText, traverse } from '../etoile'
 import { DEFAULT_MATRIX_LOC } from '../etoile/native/matrix'
-import { isScrollWheelOrRightButtonOnMouseupAndDown, smoothFrame, stackMatrixTransformWithGraphAndLayer } from '../shared'
+import { isScrollWheelOrRightButtonOnMouseupAndDown, smoothFrame, stackMatrixTransform } from '../shared'
 import { definePlugin } from '../shared/plugin-driver'
 import type { PluginContext } from '../shared/plugin-driver'
 import { ANIMATION_DURATION } from './highlight'
@@ -57,10 +58,26 @@ export const presetDragElementPlugin = definePlugin({
             meta.dragOptions.y = offsetY
             meta.dragOptions.lastX = lastX
             meta.dragOptions.lastY = lastY
+
+            const cloned = component.elements.map((el) => isBox(el) ? el.clone() : el)
             component.cleanup()
-            component.draw(false, false)
-            stackMatrixTransformWithGraphAndLayer(component.elements, matrix.e, matrix.f, 1)
-            component.update(true)
+            component.add(...cloned)
+            traverse(component.elements, (graph) => {
+              if (isText(graph)) {
+                const { textX, textY } = (graph.__widget__) as { textX: number, textY: number }
+                graph.x = textX
+                graph.y = textY
+              }
+              if (isRoundRect(graph)) {
+                const { x, y, w, h } = (graph.__widget__) as { x: number, y: number, w: number, h: number }
+                graph.x = x
+                graph.y = y
+                graph.width = w
+                graph.height = h
+              }
+              stackMatrixTransform(graph, matrix.e, matrix.f, 1)
+            })
+            component.update()
             return true
           }, {
             duration: ANIMATION_DURATION,

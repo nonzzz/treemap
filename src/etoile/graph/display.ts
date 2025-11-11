@@ -21,9 +21,9 @@ export abstract class Display {
   id: number
   matrix: Matrix2D
   abstract get __instanceOf__(): DisplayType
-  constructor() {
+  constructor(id?: number) {
     this.parent = null
-    this.id = SELF_ID.get()
+    this.id = id ?? SELF_ID.get()
     this.matrix = new Matrix2D()
   }
 
@@ -39,7 +39,11 @@ export interface GraphStyleSheet {
   lineWidth: number
 }
 
-export interface LocOptions {
+interface RequestID {
+  __id__?: number
+}
+
+export interface LocOptions extends RequestID {
   width: number
   height: number
   x: number
@@ -166,7 +170,7 @@ export abstract class S extends Display {
   skewY: number
 
   constructor(options: Partial<LocOptions> = {}) {
-    super()
+    super(options.__id__)
     this.width = options.width || 0
     this.height = options.height || 0
     this.x = options.x || 0
@@ -181,14 +185,16 @@ export abstract class S extends Display {
 
 // For performance. we need impl AABB Check for render.
 
-export abstract class Graph extends S {
+export abstract class Graph<T extends Any = Any> extends S {
   instruction: ReturnType<typeof createInstruction>
   __options__: Partial<LocOptions>
+  __widget__: T
   abstract style: GraphStyleSheet
-  constructor(options: Partial<GraphOptions> = {}) {
+  constructor(options: Partial<GraphOptions> = {}, widget?: T) {
     super(options)
     this.instruction = createInstruction()
     this.__options__ = options
+    this.__widget__ = widget as T
   }
   abstract create(): void
   abstract clone(): Graph

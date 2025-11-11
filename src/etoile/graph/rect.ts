@@ -11,10 +11,10 @@ export type RoundRectStyleOptions = RectStyleOptions & { radius: number }
 
 export type RoundRectOptions = RectOptions & { style: Partial<RoundRectStyleOptions> }
 
-export class RoundRect extends Graph {
+export class RoundRect<T extends Any = Any> extends Graph {
   style: Required<RoundRectStyleOptions>
-  constructor(options: Partial<RoundRectOptions> = {}) {
-    super(options)
+  constructor(options: Partial<RoundRectOptions> = {}, widget?: T) {
+    super(options, widget)
     this.style = (options.style || Object.create(null)) as Required<RoundRectStyleOptions>
   }
 
@@ -51,6 +51,6 @@ export class RoundRect extends Graph {
   }
 
   clone() {
-    return new RoundRect({ ...this.style, ...this.__options__ })
+    return new RoundRect({ ...this.style, ...this.__options__, __id__: this.id }, this.__widget__)
   }
 }

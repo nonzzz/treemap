@@ -28,23 +28,26 @@ export function drawGraphIntoCanvas(
   if (asserts.isGraph(graph) && visibleSet && !visibleSet.has(graph.id)) {
     return
   }
-  ctx.save()
+
   if (asserts.isBox(graph)) {
     const elements = graph.elements
-    const cap = elements.length
-
-    for (let i = 0; i < cap; i++) {
+    for (let i = 0; i < elements.length; i++) {
       const element = elements[i]
+      if (asserts.isGraph(element) && visibleSet && !visibleSet.has(element.id)) {
+        continue
+      }
       drawGraphIntoCanvas(element, opts, visibleSet)
     }
+    return
   }
   if (asserts.isGraph(graph)) {
+    ctx.save()
     const matrix = graph.matrix.create({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 })
     matrix.transform(graph.x, graph.y, graph.scaleX, graph.scaleY, graph.rotation, graph.skewX, graph.skewY)
     applyCanvasTransform(ctx, matrix, dpr)
     graph.render(ctx)
+    ctx.restore()
   }
-  ctx.restore()
 }
 
 type BBox = { x: number, y: number, width: number, height: number }
@@ -165,19 +168,17 @@ export class Schedule<D extends DefaultEventDefinition = DefaultEventDefinition>
     this.render = new Render(this.to, renderOptions as RenderViewportOptions)
   }
 
-  update(buildQuadTree = false) {
+  update() {
     this.render.clear(this.render.options.width, this.render.options.height)
     const all = collectBoundingGraphics(this)
     const viewport = { x: 0, y: 0, width: this.render.options.width, height: this.render.options.height }
-    if (buildQuadTree) {
-      this.quadTree = new QuadTree<Display>(viewport)
-      const cap = all.length
-      for (let i = 0; i < cap; i++) {
-        const { bbox, obj } = all[i]
-        this.quadTree.insert(bbox, obj)
-      }
+    this.quadTree = new QuadTree<Display>(viewport)
+    const cap = all.length
+    for (let i = 0; i < cap; i++) {
+      const { bbox, obj } = all[i]
+      this.quadTree.insert(bbox, obj)
     }
-    let visibleSet = new Set<number>()
+    let visibleSet = undefined
     if (this.quadTree) {
       const visible = this.quadTree.query(viewport)
       visibleSet = new Set(visible.map((g) => g.id))

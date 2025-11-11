@@ -78,7 +78,7 @@ export const presetHighlightPlugin = definePlugin({
           meta.highlight?.add(mask)
           meta.highlight?.setZIndexForHighlight('1')
           stackMatrixTransform(mask, matrix.e, matrix.f, 1)
-          meta.highlight?.update(true)
+          meta.highlight?.update()
         }, {
           duration: ANIMATION_DURATION
         })
