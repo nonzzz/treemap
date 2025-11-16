@@ -15,7 +15,7 @@ export function isRoundRect(display: Display): display is RoundRect {
   return isGraph(display) && display.__shape__ === DisplayType.RoundRect
 }
 
-export function isText(display: Display): display is Text {
+export function isText<T extends Any = Any>(display: Display): display is Text<T> {
   return isGraph(display) && display.__shape__ === DisplayType.Text
 }
 

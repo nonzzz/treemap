@@ -3,8 +3,8 @@ import { asserts } from './types'
 
 export abstract class C extends Display {
   elements: Display[]
-  constructor() {
-    super()
+  constructor(id?: number) {
+    super(id)
     this.elements = []
   }
   abstract get __instanceOf__(): DisplayType
@@ -43,8 +43,8 @@ export abstract class C extends Display {
 export class Box extends C {
   elements: Display[]
 
-  constructor() {
-    super()
+  constructor(id?: number) {
+    super(id)
     this.elements = []
   }
 
@@ -83,7 +83,7 @@ export class Box extends C {
   }
 
   clone() {
-    const box = new Box()
+    const box = new Box(this.id)
     if (this.elements.length) {
       const stack: { elements: Display[], parent: Box }[] = [{ elements: this.elements, parent: box }]
 

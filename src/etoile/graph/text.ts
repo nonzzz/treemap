@@ -14,11 +14,11 @@ export interface TextOptions extends Omit<GraphOptions, 'style'> {
   >
 }
 
-export class Text extends Graph {
+export class Text<T extends Any = Any> extends Graph {
   text: string
   style: Required<TextOptions['style']>
-  constructor(options: Partial<TextOptions> = {}) {
-    super(options)
+  constructor(options: Partial<TextOptions> = {}, widget?: T) {
+    super(options, widget)
     this.text = options.text || ''
     this.style = (options.style || Object.create(null)) as Required<TextOptions['style']>
   }
@@ -35,7 +35,7 @@ export class Text extends Graph {
   }
 
   clone() {
-    return new Text({ ...this.style, ...this.__options__ })
+    return new Text({ ...this.style, ...this.__options__, __id__: this.id }, this.__widget__)
   }
 
   get __shape__() {
