@@ -142,7 +142,7 @@ export class Component extends Schedule {
     )
   }
 
-  private drawRoundRect(node: LayoutModule) {
+  drawRoundRect(node: LayoutModule) {
     const [x, y, w, h] = node.layout
     const { rectRadius } = node.config
 
@@ -164,7 +164,7 @@ export class Component extends Schedule {
       this.drawRoundRect(child)
     }
   }
-  private drawText(node: LayoutModule) {
+  drawText(node: LayoutModule) {
     if (!node.node.label && !node.node.isCombinedNode) { return }
 
     const [x, y, w, h] = node.layout
