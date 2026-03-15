@@ -262,6 +262,19 @@ main {
   display: inline-flex;
   width: 100%;
   justify-content: center;
+  flex: 0 0 auto;
+}
+
+#menu > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#menu > div > ul {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 @media screen and (min-width: 800px) {
