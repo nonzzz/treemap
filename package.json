@@ -56,7 +56,7 @@
     "tinyglobby": "^0.2.13",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vite-bundle-analyzer": "^0.22.0"
+    "vite-bundle-analyzer": "^1.3.6"
   },
   "pnpm": {
     "overrides": {
@@ -70,5 +70,5 @@
       "esbuild"
     ]
   },
-  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }
