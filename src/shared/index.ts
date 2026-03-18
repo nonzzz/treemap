@@ -152,9 +152,9 @@ export class DefaultMap<K, V> extends Map<K, V> {
     }
     return super.get(key)!
   }
-  getOrInsert(key: K, value?: V): V {
+  getOrInsert(key: K, value?: ()=>V): V {
     if (!super.has(key)) {
-      const defaultValue = value || this.defaultFactory()
+      const defaultValue = value ? value() : this.defaultFactory()
       super.set(key, defaultValue)
       return defaultValue
     }

@@ -21,7 +21,7 @@ const treemap = createTreemap({
     presetZoomablePlugin,
     presetHighlightPlugin,
     presetDragElementPlugin,
-    presetScalePlugin(),
+    presetScalePlugin({ min: 1 }),
     presetMenuPlugin({
       style: {
         borderRadius: '5px',

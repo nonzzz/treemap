@@ -184,7 +184,7 @@ export class Component extends Schedule {
 
     const optimalFontSize = this.caches.getOrInsert(
       node.node.id,
-      evaluateOptimalFontSize(
+     ()=> evaluateOptimalFontSize(
         this.render.ctx,
         content,
         config,
