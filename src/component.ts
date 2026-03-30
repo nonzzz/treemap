@@ -50,8 +50,6 @@ export class Component extends Schedule {
   pluginDriver: PluginDriver<Component>
   data: NativeModule[]
   colorMappings: ColorMappings
-  rectLayer: Box
-  textLayer: Box
   layoutNodes: LayoutModule[]
   config: GraphicConfig
   caches: DefaultMap<string, number>
@@ -62,8 +60,6 @@ export class Component extends Schedule {
     this.config = config
     this.colorMappings = {}
     this.pluginDriver = new PluginDriver(this)
-    this.rectLayer = new Box()
-    this.textLayer = new Box()
     this.caches = new DefaultMap(() => 14)
     this.layoutNodes = []
   }
@@ -142,8 +138,9 @@ export class Component extends Schedule {
     )
   }
 
-  drawRoundRect(node: LayoutModule) {
+  drawNode(node: LayoutModule) {
     const [x, y, w, h] = node.layout
+
     const { rectRadius } = node.config
 
     const effectiveRadius = Math.min(
@@ -151,64 +148,65 @@ export class Component extends Schedule {
       w / 4,
       h / 4
     )
+
     const fill = this.colorMappings[node.node.id] || DEFAULT_RECT_FILL_DESC
 
-    const rect = createRoundBlock(x, y, w, h, {
-      fill,
-      padding: 0,
-      radius: effectiveRadius
-    }, { x, y, w, h })
+    const graphic = new Box()
 
-    this.rectLayer.add(rect)
+    this.add(graphic)
+
+    const rect = createRoundBlock(x, y, w, h, { fill, padding: 0, radius: effectiveRadius }, { x, y, w, h })
+
+    graphic.add(rect)
+
+    if (node.node.label || node.node.isCombinedNode) {
+      const content: string = node.node.isCombinedNode ? `+ ${node.node.originalNodeCount} Modules` : node.node.label
+      const { titleAreaHeight } = node.config
+      const availableHeight = node.children && node.children.length > 0
+        ? titleAreaHeight - DEFAULT_RECT_GAP * 2
+        : h - DEFAULT_RECT_GAP * 2
+      const availableWidth = w - DEFAULT_RECT_GAP * 2
+
+      if (availableWidth > 0 && availableHeight > 0) {
+        const config = <Required<GraphicFont>> {
+          fontSize: this.config.font?.fontSize || DEFAULT_FONT_SIZE,
+          family: this.config.font?.family || DEFAULT_FONT_FAMILY,
+          color: this.config.font?.color || DEFAULT_FONT_COLOR
+        }
+
+        const optimalFontSize = this.caches.getOrInsert(
+          node.node.id,
+          () =>
+            evaluateOptimalFontSize(
+              this.render.ctx,
+              content,
+              config,
+              availableWidth,
+              availableHeight
+            )
+        )
+
+        const font = `${optimalFontSize}px ${config.family}`
+        this.render.ctx.font = font
+
+        const result = getTextLayout(this.render.ctx, content, availableWidth, availableHeight)
+        if (!result.valid) { return }
+        const { text } = result
+
+        const textX = x + Math.round(w / 2)
+        const textY = y + (node.children && node.children.length > 0
+          ? Math.round(titleAreaHeight / 2)
+          : Math.round(h / 2))
+        const textComponent = createTitleText(text, textX, textY, font, config.color, { textX, textY })
+        graphic.add(textComponent)
+      }
+    }
+
     for (const child of node.children) {
-      this.drawRoundRect(child)
+      this.drawNode(child)
     }
   }
-  drawText(node: LayoutModule) {
-    if (!node.node.label && !node.node.isCombinedNode) { return }
 
-    const [x, y, w, h] = node.layout
-    const { titleAreaHeight } = node.config
-    const content: string = node.node.isCombinedNode ? `+ ${node.node.originalNodeCount} Modules` : node.node.label
-    const availableHeight = node.children && node.children.length > 0
-      ? titleAreaHeight - DEFAULT_RECT_GAP * 2
-      : h - DEFAULT_RECT_GAP * 2
-    const availableWidth = w - DEFAULT_RECT_GAP * 2
-    if (availableWidth <= 0 || availableHeight <= 0) { return }
-
-    const config: Required<GraphicFont> = {
-      fontSize: this.config.font?.fontSize || DEFAULT_FONT_SIZE,
-      family: this.config.font?.family || DEFAULT_FONT_FAMILY,
-      color: this.config.font?.color || DEFAULT_FONT_COLOR
-    }
-
-    const optimalFontSize = this.caches.getOrInsert(
-      node.node.id,
-     ()=> evaluateOptimalFontSize(
-        this.render.ctx,
-        content,
-        config,
-        availableWidth,
-        availableHeight
-      )
-    )
-    const font = `${optimalFontSize}px ${config.family}`
-    this.render.ctx.font = font
-
-    const result = getTextLayout(this.render.ctx, content, availableWidth, availableHeight)
-    if (!result.valid) { return }
-    const { text } = result
-
-    const textX = x + Math.round(w / 2)
-    const textY = y + (node.children && node.children.length > 0
-      ? Math.round(titleAreaHeight / 2)
-      : Math.round(h / 2))
-    const textComponent = createTitleText(text, textX, textY, font, config.color, { textX, textY })
-    this.textLayer.add(textComponent)
-    for (const child of node.children) {
-      this.drawText(child)
-    }
-  }
   draw(flush = true, update = true) {
     // prepare data
     const { width, height } = this.render.options
@@ -223,22 +221,17 @@ export class Component extends Schedule {
         this.colorMappings = result.colorMappings || {}
       }
     }
-    for (const node of this.layoutNodes) {
-      this.drawRoundRect(node)
-    }
 
     for (const node of this.layoutNodes) {
-      this.drawText(node)
+      this.drawNode(node)
     }
-    this.add(this.rectLayer, this.textLayer)
+
     if (update) {
       this.update()
     }
   }
   cleanup() {
-    this.remove(this.rectLayer, this.textLayer)
-    this.rectLayer.destory()
-    this.textLayer.destory()
+    this.destory()
   }
   calculateLayoutNodes(data: NativeModule[], rect: Parameters<typeof squarify>[1], scale = 1) {
     const config: Required<GraphicLayout> = {

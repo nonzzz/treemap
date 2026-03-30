@@ -52,10 +52,40 @@ export class Box extends C {
     const cap = elements.length
     for (let i = 0; i < cap; i++) {
       const element = elements[i]
-      if (element.parent) {
-        // todo
+
+      if (element === this) {
+        console.warn('skip adding element: cannot add self as child')
+        continue
       }
-      this.elements.push(element)
+
+      let parent: Display | null = this.parent ?? null
+      while (parent) {
+        if (parent === element) {
+          throw new Error('Cannot add an ancestor as a child (would create a cycle).')
+        }
+        parent = parent.parent ?? null
+      }
+
+      if (element.parent) {
+        if (element.parent === this) {
+          const idx = this.elements.indexOf(element)
+          if (idx === -1) {
+            this.elements.push(element)
+          }
+          element.parent = this
+          continue
+        }
+
+        const prev = element.parent
+        if (prev && asserts.isBox(prev)) {
+          prev.remove(element)
+        } else {
+          element.parent = null
+        }
+      }
+      if (this.elements.indexOf(element) === -1) {
+        this.elements.push(element)
+      }
       element.parent = this
     }
   }
