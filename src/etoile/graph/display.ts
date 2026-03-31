@@ -16,15 +16,18 @@ export const enum DisplayType {
   RoundRect = 'RoundRect'
 }
 
-export abstract class Display {
+export abstract class Display<T extends Any = Any> {
   parent: Display | null
   id: number
   matrix: Matrix2D
+  __widget__: T
+
   abstract get __instanceOf__(): DisplayType
-  constructor(id?: number) {
+  constructor(id?: number, widget?: T) {
     this.parent = null
     this.id = id ?? SELF_ID.get()
     this.matrix = new Matrix2D()
+    this.__widget__ = widget as T
   }
 
   destory() {
@@ -188,7 +191,6 @@ export abstract class S extends Display {
 export abstract class Graph<T extends Any = Any> extends S {
   instruction: ReturnType<typeof createInstruction>
   __options__: Partial<LocOptions>
-  __widget__: T
   abstract style: GraphStyleSheet
   constructor(options: Partial<GraphOptions> = {}, widget?: T) {
     super(options)

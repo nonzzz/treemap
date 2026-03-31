@@ -138,7 +138,7 @@ export class Component extends Schedule {
     )
   }
 
-  drawNode(node: LayoutModule) {
+  drawNode(node: LayoutModule, box: Box | null) {
     const [x, y, w, h] = node.layout
 
     const { rectRadius } = node.config
@@ -151,9 +151,13 @@ export class Component extends Schedule {
 
     const fill = this.colorMappings[node.node.id] || DEFAULT_RECT_FILL_DESC
 
-    const graphic = new Box()
+    const graphic = new Box(undefined, node)
 
-    this.add(graphic)
+    if (box) {
+      box.add(graphic)
+    } else {
+      this.add(graphic)
+    }
 
     const rect = createRoundBlock(x, y, w, h, { fill, padding: 0, radius: effectiveRadius }, { x, y, w, h })
 
@@ -203,7 +207,7 @@ export class Component extends Schedule {
     }
 
     for (const child of node.children) {
-      this.drawNode(child)
+      this.drawNode(child, graphic)
     }
   }
 
@@ -223,7 +227,7 @@ export class Component extends Schedule {
     }
 
     for (const node of this.layoutNodes) {
-      this.drawNode(node)
+      this.drawNode(node, null)
     }
 
     if (update) {

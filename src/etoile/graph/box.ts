@@ -40,12 +40,13 @@ export abstract class C extends Display {
   }
 }
 
-export class Box extends C {
+export class Box<T extends AnyObject = AnyObject> extends C {
   elements: Display[]
 
-  constructor(id?: number) {
+  constructor(id?: number, widget?: T) {
     super(id)
     this.elements = []
+    this.__widget__ = widget as T
   }
 
   add(...elements: Display[]) {
@@ -113,9 +114,9 @@ export class Box extends C {
   }
 
   clone() {
-    const box = new Box(this.id)
+    const box = new Box(this.id, this.__widget__)
     if (this.elements.length) {
-      const stack: { elements: Display[], parent: Box }[] = [{ elements: this.elements, parent: box }]
+      const stack: { elements: Display[], parent: Box<Any> }[] = [{ elements: this.elements, parent: box }]
 
       while (stack.length > 0) {
         const { elements, parent } = stack.pop()!
@@ -123,7 +124,7 @@ export class Box extends C {
         for (let i = 0; i < cap; i++) {
           const element = elements[i]
           if (asserts.isBox(element)) {
-            const newBox = new Box()
+            const newBox = new Box<T>()
             newBox.parent = parent
             parent.add(newBox)
             stack.push({ elements: element.elements, parent: newBox })
