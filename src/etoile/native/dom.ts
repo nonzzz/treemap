@@ -20,7 +20,12 @@ export function getOffset(el: HTMLElement) {
   ]
 }
 
-export function captureBoxXY(c: HTMLElement, evt: unknown, a: number, d: number, translateX: number, translateY: number) {
+export interface BBox {
+  x: number
+  y: number
+}
+
+export function captureBoxXY(c: HTMLElement, evt: unknown, a: number, d: number, translateX: number, translateY: number): BBox {
   const boundingClientRect = c.getBoundingClientRect()
   if (evt instanceof MouseEvent) {
     const [e, f] = getOffset(c)
