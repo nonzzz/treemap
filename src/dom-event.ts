@@ -4,7 +4,7 @@ import type { BindThisParameter } from './etoile'
 import { captureBoxXY } from './etoile/native/dom'
 import { DEFAULT_MATRIX_LOC, Matrix2D } from './etoile/native/matrix'
 import type { LayoutModule } from './primitives/squarify'
-import { findRelativeNode } from './primitives/struct'
+import { findRelativeGraphicNode } from './primitives/struct'
 
 // I think those event is enough for user.
 
@@ -183,15 +183,11 @@ export class DOMEvent extends Event<DOMEVEntDefinition> {
   }
 
   private dispatch<T extends DOMEventType>(kind: T, e: DOMEventMetadata<T>) {
-    const node = this.findRelativeNode(e)
+    const { native } = e
+    const bbox = captureBoxXY(this.el!, native, 1, 1, this.matrix.e, this.matrix.f)
 
-    this.component.pluginDriver.runHook('onDOMEventTriggered', kind, e, node, this)
-    this.emit('__exposed__', kind, { native: e.native, module: node })
-  }
-  findRelativeNode(e: DOMEventMetadata) {
-    return findRelativeNode(
-      captureBoxXY(this.el!, e.native, 1, 1, this.matrix.e, this.matrix.f),
-      this.component.layoutNodes
-    )
+    const graphic = findRelativeGraphicNode(bbox, this.component.elements)
+    this.component.pluginDriver.runHook('onDOMEventTriggered', kind, e, graphic, this)
+    this.emit('__exposed__', kind, { native: e.native, module: graphic })
   }
 }

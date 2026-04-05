@@ -4,7 +4,6 @@ import { DEFAULT_MATRIX_LOC } from '../etoile/native/matrix'
 import { smoothFrame, stackMatrixTransformWithGraphAndLayer } from '../shared'
 import { definePlugin } from '../shared/plugin-driver'
 import type { PluginContext } from '../shared/plugin-driver'
-import { getHighlightInstance } from './drag'
 import { ANIMATION_DURATION } from './highlight'
 
 interface ScaleOptions {
@@ -231,16 +230,8 @@ function updateViewport(
   { stateManager: state, component, matrix }: DOMEvent,
   useAnimation: boolean = false
 ) {
-  const highlight = getHighlightInstance.apply(pluginContext)
-
   const doUpdate = () => {
-    if (highlight && highlight.highlight) {
-      highlight.highlight.reset()
-      highlight.highlight.setZIndexForHighlight()
-    }
-    if (highlight) {
-      highlight.highlightSeq = (highlight.highlightSeq ?? 0) + 1
-    }
+    component.clearOverlay()
 
     component.cleanup()
     const { width, height } = component.render.options

@@ -2,6 +2,7 @@ import { Component, logger } from '../component'
 import type { ColorMappings } from '../component'
 import { DOMEvent } from '../dom-event'
 import type { DOMEventMetadata, DOMEventType } from '../dom-event'
+import { Box } from '../etoile'
 import type { BasicTreemapInstance } from '../index'
 import type { GraphicLayout } from '../interface'
 import type { LayoutModule, Rect } from '../primitives/squarify'
@@ -28,7 +29,7 @@ export interface PluginHooks {
     this: PluginContext,
     name: N,
     event: DOMEventMetadata<N>,
-    module: LayoutModule | null,
+    graphic: Box<LayoutModule> | null,
     domEvent: DOMEvent
   ) => void
   onLayoutCalculated?: (

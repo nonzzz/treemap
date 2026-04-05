@@ -4,7 +4,6 @@ import { isScrollWheelOrRightButtonOnMouseupAndDown, smoothFrame, stackMatrixTra
 import { definePlugin } from '../shared/plugin-driver'
 import type { PluginContext } from '../shared/plugin-driver'
 import { ANIMATION_DURATION } from './highlight'
-import type { HighlightMeta } from './highlight'
 
 interface DragOptions {
   x: number
@@ -41,7 +40,6 @@ export const presetDragElementPlugin = definePlugin({
 
         state.transition('DRAGGING')
         if (state.isInState('DRAGGING')) {
-          const highlight = getHighlightInstance.call(this)
           smoothFrame((_, cleanup) => {
             cleanup()
             const { offsetX, offsetY } = event.native
@@ -49,10 +47,7 @@ export const presetDragElementPlugin = definePlugin({
             const drawY = offsetY - meta.dragOptions.y
             const lastX = meta.dragOptions.x
             const lastY = meta.dragOptions.y
-            if (highlight?.highlight) {
-              highlight.highlight.reset()
-              highlight.highlight.setZIndexForHighlight()
-            }
+            component.clearOverlay()
             matrix.translation(drawX, drawY)
             meta.dragOptions.x = offsetX
             meta.dragOptions.y = offsetY
@@ -98,11 +93,7 @@ export const presetDragElementPlugin = definePlugin({
           }
         }
         if (state.isInState('DRAGGING') && state.canTransition('IDLE')) {
-          const highlight = getHighlightInstance.call(this)
-          if (highlight && highlight.highlight) {
-            highlight.highlight.reset()
-            highlight.highlight.setZIndexForHighlight()
-          }
+          component.clearOverlay()
           const meta = getDragOptions.call(this)
           if (meta && meta.dragOptions) {
             meta.dragOptions.x = 0
@@ -145,10 +136,6 @@ export const presetDragElementPlugin = definePlugin({
     state.reset()
   }
 })
-
-export function getHighlightInstance(this: PluginContext) {
-  return this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
-}
 
 export function getDragOptions(this: PluginContext) {
   const meta = this.getPluginMetadata<DragMetadata>('treemap:preset-drag-element')

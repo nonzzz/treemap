@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
+import { Box } from '../etoile'
+import { Display } from '../etoile/graph/display'
+import type { BBox } from '../etoile/native/dom'
 import { perferNumeric } from '../shared'
 import type { LayoutModule } from './squarify'
 
@@ -76,11 +79,16 @@ export function getNodeDepth(node: NativeModule) {
   return depth
 }
 
-export function visit<T extends AnyObject>(data: T[], fn: (data: T) => boolean | void): T | null {
+export function visit<T extends AnyObject>(
+  data: T[],
+  fn: (data: T) => boolean | void,
+  getChildren: (data: T) => T[] | null | undefined = (d) => d.children as T[] | null | undefined
+): T | null {
   if (!data) { return null }
   for (const d of data) {
-    if (d.children) {
-      const result = visit(d.children, fn)
+    const children = getChildren(d)
+    if (children) {
+      const result = visit(children, fn, getChildren)
       if (result) { return result }
     }
     const stop = fn(d)
@@ -104,4 +112,18 @@ export function findRelativeNodeById(id: string, layoutNodes: LayoutModule[]) {
       return true
     }
   })
+}
+
+export function findRelativeGraphicNode(bbox: BBox, graphics: Display[]): Box<LayoutModule> | null {
+  return visit(
+    graphics as unknown as Box<LayoutModule>[],
+    (graphic) => {
+      const widget = graphic.__widget__ as { layout?: number[] } | null | undefined
+      if (Array.isArray(widget?.layout)) {
+        const [x, y, w, h] = widget.layout
+        return bbox.x >= x && bbox.y >= y && bbox.x < x + w && bbox.y < y + h
+      }
+    },
+    (graphic) => (graphic as unknown as { elements?: Box<LayoutModule>[] }).elements
+  )
 }
