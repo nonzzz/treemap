@@ -1,34 +1,13 @@
-import type { DOMEVEntDefinition } from '../dom-event'
-import { Schedule } from '../etoile'
+import type { RoundRect } from '../etoile'
 import type { ColorDecoratorResultRGB } from '../etoile/native/runtime'
-import { createRoundBlock, smoothFrame, stackMatrixTransform } from '../shared'
+import type { DirtyRect } from '../etoile/schedule'
+import type { LayoutModule } from '../primitives/squarify'
+import { createRoundBlock } from '../shared'
 import { definePlugin } from '../shared/plugin-driver'
 
-export class Highlight extends Schedule<DOMEVEntDefinition> {
-  reset() {
-    this.destory()
-    this.update()
-  }
-
-  get canvas() {
-    return this.render.canvas
-  }
-
-  setZIndexForHighlight(zIndex = '-1') {
-    this.canvas.style.zIndex = zIndex
-  }
-
-  init() {
-    this.setZIndexForHighlight()
-    this.canvas.style.position = 'absolute'
-    this.canvas.style.pointerEvents = 'none'
-  }
-}
-
 export interface HighlightMeta {
-  highlight: Highlight | null
-  // To sync different event handlers
-  highlightSeq?: number
+  overlayGraphic: RoundRect | null
+  lastDirtyRect: DirtyRect | null
 }
 
 export const ANIMATION_DURATION = 300
@@ -39,70 +18,99 @@ const fill = <ColorDecoratorResultRGB> { desc: { r: 255, g: 255, b: 255 }, mode:
 
 export const presetHighlightPlugin = definePlugin({
   name: 'treemap:preset-highlight',
-  onLoad() {
-    const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
-    if (!meta) {
+  onDOMEventTriggered(name, _, graphic, { stateManager: state, matrix, component }) {
+    // Any interaction that isn't a pure hover must reset the overlay so we never
+    // show a stale highlight after zoom / drag / pan transitions.
+    if (name !== 'mousemove') {
+      const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
+      if (meta && meta.lastDirtyRect) {
+        component.clearOverlay()
+        meta.overlayGraphic = null
+        meta.lastDirtyRect = null
+      }
       return
     }
-    if (!meta.highlight) {
-      meta.highlight = new Highlight(this.instance.to)
-    }
-  },
-  onDOMEventTriggered(name, _, module, { stateManager: state, matrix }) {
+
     if (name === 'mousemove') {
       if (state.canTransition('MOVE')) {
-        const meta = this.getPluginMetadata('treemap:preset-highlight') as HighlightMeta
-        if (!module) {
-          meta.highlight?.reset()
-          meta.highlight?.update()
-          meta.highlight?.setZIndexForHighlight()
-          meta.highlightSeq = (meta.highlightSeq ?? 0) + 1
+        const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
+        if (!meta) { return }
+
+        const oldDirtyRect = meta.lastDirtyRect
+
+        if (!graphic) {
+          if (oldDirtyRect) {
+            component.clearOverlay()
+            component.updateDirty([oldDirtyRect])
+            meta.overlayGraphic = null
+            meta.lastDirtyRect = null
+          }
           return
         }
 
+        const module = graphic.__widget__ as LayoutModule
         const [x, y, w, h] = module.layout
+        const { rectRadius } = module.config
+        const effectiveRadius = Math.min(rectRadius, w / 4, h / 4)
 
-        const effectiveRadius = Math.min(module.config.rectRadius, w / 4, h / 4)
-        meta.highlightSeq = (meta.highlightSeq ?? 0) + 1
-        const thisSeq = meta.highlightSeq
+        // Layout coordinates are already in visual (zoomed) space; matrix.e/f
+        // is the pan translation that gets added to every element position.
+        const visualX = x + matrix.e
+        const visualY = y + matrix.f
 
-        smoothFrame((_, cleanup) => {
-          if (meta.highlightSeq !== thisSeq) {
-            meta.highlight?.setZIndexForHighlight()
-            cleanup()
-            return
-          }
-          cleanup()
-          meta.highlight?.reset()
-          const mask = createRoundBlock(x, y, w, h, { fill, opacity: HIGH_LIGHT_OPACITY, radius: effectiveRadius, padding: 0 })
-          meta.highlight?.add(mask)
-          meta.highlight?.setZIndexForHighlight('1')
-          stackMatrixTransform(mask, matrix.e, matrix.f, 1)
-          meta.highlight?.update()
-        }, {
-          duration: ANIMATION_DURATION
+        // Expand dirty rect by 1 CSS px on each side to cover anti-aliased edges.
+        const pad = 1
+        const newDirtyRect: DirtyRect = {
+          x: visualX - pad,
+          y: visualY - pad,
+          width: w + pad * 2,
+          height: h + pad * 2
+        }
+
+        const mask = createRoundBlock(visualX, visualY, w, h, {
+          fill,
+          opacity: HIGH_LIGHT_OPACITY,
+          radius: effectiveRadius,
+          padding: 0
         })
+
+        component.clearOverlay()
+        component.addOverlay(mask)
+        meta.overlayGraphic = mask
+        meta.lastDirtyRect = newDirtyRect
+
+        const dirtyRects: DirtyRect[] = oldDirtyRect
+          ? [newDirtyRect, oldDirtyRect]
+          : [newDirtyRect]
+        component.updateDirty(dirtyRects)
+      } else {
+        // State changed away from hoverable (e.g. dragging / zooming) — clear overlay.
+        const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
+        if (meta && meta.lastDirtyRect) {
+          component.clearOverlay()
+          meta.overlayGraphic = null
+          meta.lastDirtyRect = null
+        }
       }
     }
   },
   onResize() {
     const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
-    if (!meta) {
-      return
-    }
-    meta.highlight?.render.initOptions({ ...this.instance.render.options })
-    meta.highlight?.reset()
-    meta.highlight?.init()
+    if (!meta) { return }
+    this.instance.clearOverlay()
+    meta.overlayGraphic = null
+    meta.lastDirtyRect = null
   },
   onDispose() {
     const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')
-    if (meta && meta.highlight) {
-      meta.highlight.destory()
-      meta.highlight = null
+    if (meta) {
+      this.instance.clearOverlay()
+      meta.overlayGraphic = null
+      meta.lastDirtyRect = null
     }
   },
   meta: {
-    highlight: null,
-    highlightSeq: 0
-  }
+    overlayGraphic: null,
+    lastDirtyRect: null
+  } satisfies HighlightMeta
 })

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
+import { Box } from '../etoile'
 import { Display } from '../etoile/graph/display'
 import type { BBox } from '../etoile/native/dom'
 import { perferNumeric } from '../shared'
@@ -113,9 +114,9 @@ export function findRelativeNodeById(id: string, layoutNodes: LayoutModule[]) {
   })
 }
 
-export function findRelativeGraphicNode(bbox: BBox, graphics: Display[]) {
+export function findRelativeGraphicNode(bbox: BBox, graphics: Display[]): Box<LayoutModule> | null {
   return visit(
-    graphics,
+    graphics as unknown as Box<LayoutModule>[],
     (graphic) => {
       const widget = graphic.__widget__ as { layout?: number[] } | null | undefined
       if (Array.isArray(widget?.layout)) {
@@ -123,6 +124,6 @@ export function findRelativeGraphicNode(bbox: BBox, graphics: Display[]) {
         return bbox.x >= x && bbox.y >= y && bbox.x < x + w && bbox.y < y + h
       }
     },
-    (graphic) => (graphic as unknown as { elements?: Display[] }).elements
+    (graphic) => (graphic as unknown as { elements?: Box<LayoutModule>[] }).elements
   )
 }

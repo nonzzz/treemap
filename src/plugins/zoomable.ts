@@ -1,8 +1,8 @@
-import { DEFAULT_MATRIX_LOC } from 'src/etoile/native/matrix'
 import { easing } from '../etoile'
+import { DEFAULT_MATRIX_LOC } from '../etoile/native/matrix'
 import { mixin, smoothFrame, stackMatrixTransformWithGraphAndLayer } from '../shared'
 import { definePlugin } from '../shared/plugin-driver'
-import { getDragOptions, getHighlightInstance } from './drag'
+import { getDragOptions } from './drag'
 import { ANIMATION_DURATION } from './highlight'
 import { getScaleOptions } from './wheel'
 
@@ -71,7 +71,6 @@ export const presetZoomablePlugin = definePlugin({
             scaleMeta.scaleOptions.scale = targetScale
           }
 
-          const highlight = getHighlightInstance.call(this)
           const dragMeta = getDragOptions.call(this)
 
           if (dragMeta) {
@@ -102,13 +101,7 @@ export const presetZoomablePlugin = definePlugin({
             matrix.f = startMatrix.f + (targetF - startMatrix.f) * easedProgress
             matrix.a = startMatrix.a + (targetScale - startMatrix.a) * easedProgress
             matrix.d = startMatrix.d + (targetScale - startMatrix.d) * easedProgress
-            if (highlight?.highlight) {
-              highlight.highlight.reset()
-              highlight.highlight.setZIndexForHighlight()
-            }
-            if (highlight) {
-              highlight.highlightSeq = (highlight.highlightSeq ?? 0) + 1
-            }
+            component.clearOverlay()
 
             component.cleanup()
             component.layoutNodes = component.calculateLayoutNodes(

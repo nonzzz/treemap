@@ -203,6 +203,7 @@ export abstract class Graph<T extends Any = Any> extends S {
   abstract get __shape__(): DisplayType
 
   render(ctx: CanvasRenderingContext2D) {
+    this.instruction.mods.length = 0
     this.create()
     const cap = this.instruction.mods.length
 
