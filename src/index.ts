@@ -95,7 +95,6 @@ export function createTreemap<const P extends readonly Plugin[]>(
     if (!component || !root) { return }
     const { width, height } = root.getBoundingClientRect()
     component.render.initOptions({ height, width, devicePixelRatio: window.devicePixelRatio })
-    component.render.canvas.style.position = 'absolute'
     if (domEvent) {
       component.pluginDriver.runHook('onResize', domEvent)
     }
@@ -135,6 +134,7 @@ export { definePlugin } from './shared/plugin-driver'
 export { Component, logger } from './component'
 export type { DOMEventType, ExposedEventCallback, ExposedEventDefinition, ExposedEventMethods, PrimitiveEventMetadata } from './dom-event'
 export { isClickEvent, isContextMenuEvent, isMouseEvent, isWheelEvent } from './dom-event'
+export * from './etoile'
 export type { LayoutModule } from './primitives/squarify'
 export type { Module, NativeModule } from './primitives/struct'
 export * from './shared'

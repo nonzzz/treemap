@@ -36,11 +36,11 @@ const treemap = createTreemap({
         { html: '<p>Zoom</p>', action: 'zoom' },
         { html: '<p>Reset</p>', action: 'reset' }
       ],
-      onClick(action, module) {
+      onClick(action, graphic) {
         switch (action) {
           case 'zoom': {
-            if (module?.node.id) {
-              treemap.zoom(module.node.id)
+            if (graphic?.__widget__?.node?.id) {
+              treemap.zoom(graphic.__widget__.node.id as string)
             }
             break
           }

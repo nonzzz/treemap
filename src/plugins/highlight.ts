@@ -1,4 +1,4 @@
-import type { RoundRect } from '../etoile'
+import { type RoundRect, asserts } from '../etoile'
 import type { ColorDecoratorResultRGB } from '../etoile/native/runtime'
 import type { DirtyRect } from '../etoile/schedule'
 import type { LayoutModule } from '../primitives/squarify'
@@ -50,8 +50,11 @@ export const presetHighlightPlugin = definePlugin({
 
         const module = graphic.__widget__ as LayoutModule
         const [x, y, w, h] = module.layout
-        const { rectRadius } = module.config
-        const effectiveRadius = Math.min(rectRadius, w / 4, h / 4)
+
+        const rect = graphic.elements[0]
+
+        if (!rect || !asserts.isRoundRect(rect)) { return }
+        const effectiveRadius = rect.style.radius
 
         // Layout coordinates are already in visual (zoomed) space; matrix.e/f
         // is the pan translation that gets added to every element position.

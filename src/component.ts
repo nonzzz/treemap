@@ -178,7 +178,7 @@ export class Component extends Schedule {
           color: this.config.font?.color || DEFAULT_FONT_COLOR
         }
 
-        const optimalFontSize = this.caches.getOrInsert(
+        const optimalFontSize = this.caches.getOrCreate(
           node.node.id,
           () =>
             evaluateOptimalFontSize(

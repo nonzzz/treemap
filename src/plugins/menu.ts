@@ -1,4 +1,5 @@
 import { DOMEvent, isContextMenuEvent } from '../dom-event'
+import type { Box } from '../etoile'
 import type { LayoutModule } from '../primitives/squarify'
 import { definePlugin } from '../shared/plugin-driver'
 
@@ -10,7 +11,7 @@ export interface MenuRenderConfig {
 export interface MenuPluginOptions {
   style?: Partial<CSSStyleDeclaration>
   render?: (menu: HTMLDivElement) => MenuRenderConfig[]
-  onClick?: (action: string, module: LayoutModule | null) => void
+  onClick?: (action: string, module: Box<LayoutModule> | null) => void
 }
 
 export function presetMenuPlugin(options?: MenuPluginOptions) {
@@ -33,10 +34,7 @@ export function presetMenuPlugin(options?: MenuPluginOptions) {
       if (options?.onClick) {
         options.onClick(
           action,
-          domEvent.findRelativeNode({
-            native: e,
-            kind: undefined
-          })
+          domEvent.findRelativeGraphicNode({ kind: 'click', native: e })
         )
       }
     }

@@ -124,7 +124,7 @@ export class Box<T extends AnyObject = AnyObject> extends C {
         for (let i = 0; i < cap; i++) {
           const element = elements[i]
           if (asserts.isBox(element)) {
-            const newBox = new Box<T>()
+            const newBox = new Box(undefined, element.__widget__)
             newBox.parent = parent
             parent.add(newBox)
             stack.push({ elements: element.elements, parent: newBox })

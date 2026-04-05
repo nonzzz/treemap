@@ -190,4 +190,9 @@ export class DOMEvent extends Event<DOMEVEntDefinition> {
     this.component.pluginDriver.runHook('onDOMEventTriggered', kind, e, graphic, this)
     this.emit('__exposed__', kind, { native: e.native, module: graphic })
   }
+  findRelativeGraphicNode(metadata: DOMEventMetadata<DOMEventType>) {
+    const { native } = metadata
+    const bbox = captureBoxXY(this.el!, native, 1, 1, this.matrix.e, this.matrix.f)
+    return findRelativeGraphicNode(bbox, this.component.elements)
+  }
 }
