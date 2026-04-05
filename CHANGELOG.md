@@ -1,3 +1,7 @@
+## 1.1.0
+
+Improve rendering performance and add some animation effects.
+
 ## 1.0.0
 
 First stable release.
