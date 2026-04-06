@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, logger } from './component'
 import { DOMEvent } from './dom-event'
 import type { ExposedEventMethods } from './dom-event'
@@ -19,17 +20,17 @@ export interface TreemapOptions {
 }
 
 type UnionToIntersection<U> = (
-  U extends Any ? (k: U) => void : never
+  U extends any ? (k: U) => void : never
 ) extends (k: infer I) => void ? I
   : never
 
 type PluginMixins<P extends readonly Plugin[]> = UnionToIntersection<
   {
     [K in keyof P]: P[K] extends {
-      onLoad?: (ctx: Any, component: Any) => infer R
+      onLoad?: (ctx: any, component: any) => infer R
     } ? R extends object ? R
-      : NonNull
-      : NonNull
+      : NonNullable<unknown>
+      : NonNullable<unknown>
   }[number]
 >
 export interface BasicTreemapInstance {

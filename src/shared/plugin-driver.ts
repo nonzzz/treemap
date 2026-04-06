@@ -10,7 +10,7 @@ import { findRelativeNodeById } from '../primitives/struct'
 
 export interface PluginContext {
   resolveModuleById: (id: string) => LayoutModule | null
-  getPluginMetadata: <M = Any>(pluginName: string) => M | null
+  getPluginMetadata: <M = any>(pluginName: string) => M | null
   get instance(): Component
 }
 
@@ -23,7 +23,7 @@ export interface OnLayoutCalculatedResult {
 }
 
 export interface PluginHooks {
-  onLoad?: (this: PluginContext, treemapContext: BasicTreemapInstance, domEvent: DOMEvent) => void | Record<string, Any>
+  onLoad?: (this: PluginContext, treemapContext: BasicTreemapInstance, domEvent: DOMEvent) => void | Record<string, any>
   onModuleInit?: (this: PluginContext, modules: LayoutModule[]) => OnModuleInitResult | void
   onDOMEventTriggered?: <N extends DOMEventType>(
     this: PluginContext,
@@ -46,14 +46,14 @@ export type BasicPluginHooks = Pick<PluginHooks, 'onLoad' | 'onDOMEventTriggered
 
 export type CascadedPluginHooks = Pick<PluginHooks, 'onModuleInit' | 'onLayoutCalculated'>
 
-export interface Plugin<T = string, M = Any> extends PluginHooks {
+export interface Plugin<T = string, M = any> extends PluginHooks {
   name: T
   meta?: M
 }
 
 export function definePlugin<
   T extends string = string,
-  M = Any,
+  M = any,
   P extends Plugin<T, M> = Plugin<T, M>
 >(plugin: P): P {
   return plugin
@@ -67,7 +67,7 @@ export class PluginDriver<T extends Component> {
       resolveModuleById(id: string) {
         return findRelativeNodeById(id, component.layoutNodes)
       },
-      getPluginMetadata: <M = Any>(pluginName: string) => {
+      getPluginMetadata: <M = any>(pluginName: string) => {
         return this.getPluginMetadata<M>(pluginName)
       },
       get instance() {
@@ -116,7 +116,7 @@ export class PluginDriver<T extends Component> {
     return finalResult as ReturnType<NonNullable<CascadedPluginHooks[K]>>
   }
 
-  getPluginMetadata<M = Any>(pluginName: string): M | null {
+  getPluginMetadata<M = any>(pluginName: string): M | null {
     const plugin = this.plugins.get(pluginName)
     return (plugin?.meta as M) || null
   }

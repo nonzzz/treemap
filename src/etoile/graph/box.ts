@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Display, DisplayType } from './display'
 import { asserts } from './types'
 
@@ -40,7 +41,7 @@ export abstract class C extends Display {
   }
 }
 
-export class Box<T extends AnyObject = AnyObject> extends C {
+export class Box<T extends Record<keyof any, any> = Record<keyof any, any>> extends C {
   elements: Display[]
 
   constructor(id?: number, widget?: T) {
@@ -116,7 +117,7 @@ export class Box<T extends AnyObject = AnyObject> extends C {
   clone() {
     const box = new Box(this.id, this.__widget__)
     if (this.elements.length) {
-      const stack: { elements: Display[], parent: Box<Any> }[] = [{ elements: this.elements, parent: box }]
+      const stack: { elements: Display[], parent: Box<any> }[] = [{ elements: this.elements, parent: box }]
 
       while (stack.length > 0) {
         const { elements, parent } = stack.pop()!

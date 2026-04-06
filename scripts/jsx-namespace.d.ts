@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Child, DeepOptionalProps, InferElement, VNode } from './h'
 
 declare global {
@@ -13,7 +14,7 @@ declare global {
         : DeepOptionalProps<InferElement<K>> | ElementChildrenAttribute
     }
     export type ElementChildrenAttribute = {
-      children: Any
+      children: any
     }
   }
 }

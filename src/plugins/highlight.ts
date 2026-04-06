@@ -19,7 +19,7 @@ const fill = <ColorDecoratorResultRGB> { desc: { r: 255, g: 255, b: 255 }, mode:
 export const presetHighlightPlugin = definePlugin({
   name: 'treemap:preset-highlight',
   onDOMEventTriggered(name, _, graphic, { stateManager: state, matrix, component }) {
-    // Any interaction that isn't a pure hover must reset the overlay so we never
+    // any interaction that isn't a pure hover must reset the overlay so we never
     // show a stale highlight after zoom / drag / pan transitions.
     if (name !== 'mousemove') {
       const meta = this.getPluginMetadata<HighlightMeta>('treemap:preset-highlight')

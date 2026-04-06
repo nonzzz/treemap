@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { Box } from '../etoile'
@@ -6,7 +7,7 @@ import type { BBox } from '../etoile/native/dom'
 import { perferNumeric } from '../shared'
 import type { LayoutModule } from './squarify'
 
-export function sortChildrenByKey<T extends AnyObject, K extends keyof T = 'weight'>(data: T[], ...keys: K[]) {
+export function sortChildrenByKey<T extends Record<keyof any, any>, K extends keyof T = 'weight'>(data: T[], ...keys: K[]) {
   return data.sort((a, b) => {
     for (const key of keys) {
       const v = a[key]
@@ -24,7 +25,7 @@ export function sortChildrenByKey<T extends AnyObject, K extends keyof T = 'weig
   })
 }
 
-export function c2m<T extends AnyObject & { groups: Any[] }, K extends keyof T>(
+export function c2m<T extends Record<keyof any, any> & { groups: any[] }, K extends keyof T>(
   data: T,
   key: K,
   modifier?: (data: T) => T
@@ -39,7 +40,7 @@ export function c2m<T extends AnyObject & { groups: Any[] }, K extends keyof T>(
   return obj
 }
 
-export function flatten<T extends AnyObject & { groups: T[] }>(data: T[]) {
+export function flatten<T extends Record<keyof any, any> & { groups: T[] }>(data: T[]) {
   const result: Omit<T, 'groups'>[] = []
   for (let i = 0; i < data.length; i++) {
     const { groups, ...rest } = data[i]
@@ -79,7 +80,7 @@ export function getNodeDepth(node: NativeModule) {
   return depth
 }
 
-export function visit<T extends AnyObject>(
+export function visit<T extends Record<keyof any, any>>(
   data: T[],
   fn: (data: T) => boolean | void,
   getChildren: (data: T) => T[] | null | undefined = (d) => d.children as T[] | null | undefined

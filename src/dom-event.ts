@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from './component'
 import { Event } from './etoile'
-import type { BindThisParameter } from './etoile'
+import type { BindThisParameter, Box } from './etoile'
 import { captureBoxXY } from './etoile/native/dom'
 import { DEFAULT_MATRIX_LOC, Matrix2D } from './etoile/native/matrix'
 import type { LayoutModule } from './primitives/squarify'
@@ -12,7 +13,7 @@ export const DOM_EVENTS = ['click', 'mousedown', 'mousemove', 'mouseup', 'mouseo
 
 export type DOMEventType = typeof DOM_EVENTS[number]
 
-export interface DOMEventMetadata<T extends keyof HTMLElementEventMap = Any> {
+export interface DOMEventMetadata<T extends keyof HTMLElementEventMap = any> {
   native: HTMLElementEventMap[T]
   readonly kind: T
 }
@@ -21,19 +22,19 @@ export type DOMEventCallback<T extends DOMEventType> = (metadata: DOMEventMetada
 
 export interface PrimitiveEventMetadata<T extends keyof HTMLElementEventMap> {
   native: HTMLElementEventMap[T]
-  module: LayoutModule | null
+  module: Box<LayoutModule> | null
 }
 
 export type ExposedEventCallback<T extends DOMEventType> = (metadata: PrimitiveEventMetadata<T>) => void
 
 export type ExposedEventDefinition = {
-  [K in DOMEventType]: BindThisParameter<ExposedEventCallback<K>, AnyObject>
+  [K in DOMEventType]: BindThisParameter<ExposedEventCallback<K>, Record<keyof any, any>>
 }
 
-export interface ExposedEventMethods<C = AnyObject, D = ExposedEventDefinition> {
+export interface ExposedEventMethods<C = Record<keyof any, any>, D = ExposedEventDefinition> {
   on<Evt extends keyof D | (string & {})>(
     evt: Evt,
-    handler: BindThisParameter<Evt extends keyof D ? D[Evt] : Any, unknown extends C ? this : C>
+    handler: BindThisParameter<Evt extends keyof D ? D[Evt] : any, unknown extends C ? this : C>
   ): void
   off<Evt extends keyof D>(
     evt: keyof D,
@@ -48,7 +49,7 @@ export type DOMEVEntDefinition =
   & {
     __exposed__: <D extends DOMEventType | (string & {})>(
       type: D,
-      metadata: D extends DOMEventType ? PrimitiveEventMetadata<D> : Any
+      metadata: D extends DOMEventType ? PrimitiveEventMetadata<D> : any
     ) => void
   }
 

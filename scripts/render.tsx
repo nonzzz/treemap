@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import esbuild from 'esbuild'
 import fs from 'fs'
 import fsp from 'fs/promises'
@@ -580,7 +581,7 @@ async function main() {
       const svg = await page.$eval(
         '#' + id,
         async (el, code) => {
-          const { mermaid } = globalThis as Any as { mermaid: Mermaid }
+          const { mermaid } = globalThis as any as { mermaid: Mermaid }
           mermaid.initialize({
             theme: 'neutral',
             startOnLoad: false,

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box } from './box'
 import { Display, DisplayType, Graph } from './display'
 import { RoundRect } from './rect'
@@ -15,7 +17,7 @@ export function isRoundRect(display: Display): display is RoundRect {
   return isGraph(display) && display.__shape__ === DisplayType.RoundRect
 }
 
-export function isText<T extends Any = Any>(display: Display): display is Text<T> {
+export function isText<T extends any = any>(display: Display): display is Text<T> {
   return isGraph(display) && display.__shape__ === DisplayType.Text
 }
 

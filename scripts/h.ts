@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-use-before-define */
 // preact is fine, but i won't need it for the project.
 // Note: This is a minimal implementation that only do jsx to html string conversion.
@@ -6,7 +7,7 @@ export type HTMLTag = keyof HTMLElementTagNameMap
 
 export type ProprsWithChildren<P = unknown> = P & { children?: Child | Child[] }
 
-export type Component<P = Any> = (props: ProprsWithChildren<P>) => VNode
+export type Component<P = any> = (props: ProprsWithChildren<P>) => VNode
 
 export type Child = string | number | boolean | null | undefined | VNode
 
@@ -16,7 +17,7 @@ export type DeepOptionalProps<T> = {
 
 export type InferElement<T extends HTMLTag> = HTMLElementTagNameMap[T]
 
-export interface VNode<P = Any> {
+export interface VNode<P = any> {
   type: HTMLTag | Component<P> | 'svg'
   props: ProprsWithChildren<P>
   children: Child[]
@@ -42,7 +43,7 @@ export function h<T extends HTMLTag | Component>(
   } as JSXElement<T>
 }
 
-export const Fragment = Symbol('Fragment') as unknown as Component<Any>
+export const Fragment = Symbol('Fragment') as unknown as Component<any>
 export type FragmentType = typeof Fragment
 
 function normalizeKey(key: string, isSvg: boolean): string {
@@ -69,7 +70,7 @@ function normalizeKey(key: string, isSvg: boolean): string {
   return specialCases[key] || key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
 }
 
-function renderProps(props: ProprsWithChildren<Record<string, Any>>, isSvg: boolean): string {
+function renderProps(props: ProprsWithChildren<Record<string, any>>, isSvg: boolean): string {
   if (!props) { return '' }
   return Object.entries(props)
     .filter(([key]) => key !== 'children')

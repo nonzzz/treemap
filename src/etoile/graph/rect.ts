@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
 import { runtime } from '../native/runtime'
 import type { ColorDecoratorResult } from '../native/runtime'
 import { DisplayType, Graph } from './display'
@@ -11,7 +13,7 @@ export type RoundRectStyleOptions = RectStyleOptions & { radius: number }
 
 export type RoundRectOptions = RectOptions & { style: Partial<RoundRectStyleOptions> }
 
-export class RoundRect<T extends Any = Any> extends Graph {
+export class RoundRect<T extends any = any> extends Graph {
   style: Required<RoundRectStyleOptions>
   constructor(options: Partial<RoundRectOptions> = {}, widget?: T) {
     super(options, widget)

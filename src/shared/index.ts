@@ -22,7 +22,7 @@ export function perferNumeric(s: string | number) {
 
 export function noop() {}
 
-export function createRoundBlock<T extends Any = Any>(
+export function createRoundBlock<T extends any = any>(
   x: number,
   y: number,
   width: number,
@@ -33,7 +33,7 @@ export function createRoundBlock<T extends Any = Any>(
   return new RoundRect({ width, height, x, y, style: { ...style } }, widget)
 }
 
-export function createTitleText<T extends Any = Any>(text: string, x: number, y: number, font: string, color: string, widget?: T) {
+export function createTitleText<T extends any = any>(text: string, x: number, y: number, font: string, color: string, widget?: T) {
   return new Text({
     text,
     x,
@@ -52,9 +52,9 @@ export function applyCanvasTransform(ctx: CanvasRenderingContext2D, matrix: Matr
   ctx.setTransform(matrix.a * dpr, matrix.b * dpr, matrix.c * dpr, matrix.d * dpr, matrix.e * dpr, matrix.f * dpr)
 }
 
-export interface InheritedCollectionsWithParamter<T = Any> {
+export interface InheritedCollectionsWithParamter<T = any> {
   name: string
-  fn: (instance: T) => (...args: Any[]) => Any
+  fn: (instance: T) => (...args: any[]) => any
 }
 
 type MixinHelpWithParamater<T extends InheritedCollectionsWithParamter[]> = T extends [infer L, ...infer R]
@@ -65,7 +65,7 @@ type MixinHelpWithParamater<T extends InheritedCollectionsWithParamter[]> = T ex
   : Record<string, never>
 
 export function mixin<
-  T extends AnyObject,
+  T extends Record<keyof any, any>,
   const M extends InheritedCollectionsWithParamter<T>[]
 >(
   app: T,

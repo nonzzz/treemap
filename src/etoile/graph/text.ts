@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DisplayType, Graph } from './display'
 import type { GraphOptions, GraphStyleSheet } from './display'
 
@@ -14,7 +16,7 @@ export interface TextOptions extends Omit<GraphOptions, 'style'> {
   >
 }
 
-export class Text<T extends Any = Any> extends Graph {
+export class Text<T extends any = any> extends Graph {
   text: string
   style: Required<TextOptions['style']>
   constructor(options: Partial<TextOptions> = {}, widget?: T) {

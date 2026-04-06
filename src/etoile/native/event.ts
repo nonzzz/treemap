@@ -1,4 +1,5 @@
-type EventCallback<P = Any[]> = P extends Any[] ? (...args: P) => Any : never
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type EventCallback<P = any[]> = P extends any[] ? (...args: P) => any : never
 
 export type DefaultEventDefinition = Record<string, EventCallback>
 

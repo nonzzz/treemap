@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
 /* eslint-disable no-use-before-define */
 
 import { Matrix2D } from '../native/matrix'
@@ -16,7 +18,7 @@ export const enum DisplayType {
   RoundRect = 'RoundRect'
 }
 
-export abstract class Display<T extends Any = Any> {
+export abstract class Display<T extends any = any> {
   parent: Display | null
   id: number
   matrix: Matrix2D
@@ -86,7 +88,7 @@ export interface InstructionWithFunctionCall extends CanvasDrawImage {
 type Mod<
   T extends InstructionAssignMappings & InstructionWithFunctionCall = InstructionAssignMappings & InstructionWithFunctionCall,
   K extends keyof T = keyof T
-> = T[K] extends (...args: Any) => Any ? [K, Parameters<T[K]>] : never
+> = T[K] extends (...args: any) => any ? [K, Parameters<T[K]>] : never
 
 interface Instruction extends InstructionAssignMappings, InstructionWithFunctionCall {
   mods: Array<{ mod: Mod, type: number }>
@@ -154,7 +156,7 @@ function createInstruction() {
     stroke() {
       this.mods.push({ mod: ['stroke', []], type: CALL_MAPPINGS_MODE })
     },
-    drawImage(this: Instruction, ...args: Any[]) {
+    drawImage(this: Instruction, ...args: any[]) {
       // @ts-expect-error safe
       this.mods.push({ mod: ['drawImage', args], type: CALL_MAPPINGS_MODE })
     }
@@ -188,7 +190,7 @@ export abstract class S extends Display {
 
 // For performance. we need impl AABB Check for render.
 
-export abstract class Graph<T extends Any = Any> extends S {
+export abstract class Graph<T extends any = any> extends S {
   instruction: ReturnType<typeof createInstruction>
   __options__: Partial<LocOptions>
   abstract style: GraphStyleSheet
