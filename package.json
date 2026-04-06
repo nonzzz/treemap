@@ -1,6 +1,6 @@
 {
   "name": "squarified",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "squarified tree map",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
