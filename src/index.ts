@@ -122,6 +122,7 @@ export type TreemapInstance<P extends readonly Plugin[]> = BasicTreemapInstance 
 export * from './interface'
 export {
   c2m,
+  findRelativeGraphicNode,
   findRelativeNode,
   findRelativeNodeById,
   flatten as flattenModule,

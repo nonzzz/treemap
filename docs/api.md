@@ -42,6 +42,10 @@ const transformedData = c2m(data, 'value', (d) => ({ ...d, label: d.name }))
 Find the relative node of the given node by id. This method returns the relative node of the given node by id.
 Note: This function is based on the `visit`.
 
+### findRelativeGraphicNode
+
+Same with `findRelativeNode`
+
 ### flattenModule
 
 Flatten the module. This method returns the flattened module.
